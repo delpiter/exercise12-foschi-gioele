@@ -70,9 +70,7 @@ public class MultiQueueImpl<T, Q> implements MultiQueue<T, Q> {
         Iterator<Q> iterator = queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
             Q currentQueue = iterator.next();
-            if (!isQueueEmpty(currentQueue)) {
-                dequeuedItems.put(currentQueue, dequeue(currentQueue));
-            }
+            dequeuedItems.put(currentQueue, dequeue(currentQueue));
         }
         return dequeuedItems;
     }
@@ -90,7 +88,8 @@ public class MultiQueueImpl<T, Q> implements MultiQueue<T, Q> {
     public List<T> dequeueAllFromQueue(Q queue) {
         queueSearch(queue, QUEUE_NOT_AVAILABLE_ERROR, false);
         List<T> itemsFromSingleQueue = new LinkedList<>();
-        for (int i = 0; i < queuesMap.get(queue).size(); i++) {
+        int elementCount = queuesMap.get(queue).size();
+        for (int i = 0; i < elementCount; i++) {
             itemsFromSingleQueue.add(dequeue(queue));
         }
         return itemsFromSingleQueue;
@@ -103,6 +102,7 @@ public class MultiQueueImpl<T, Q> implements MultiQueue<T, Q> {
             throw new IllegalStateException("There is no alternative queue for moving elements to");
         }
         List<T> vacantElements = dequeueAllFromQueue(queue);
+        queuesMap.remove(queue);
         queuesMap.get(queuesMap.entrySet().iterator().next().getKey()).addAll(vacantElements);
     }
 
